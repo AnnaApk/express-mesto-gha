@@ -22,8 +22,8 @@ module.exports.getCards = (req, res) => {
     .catch(err => res.status(500).send({message: err.message}));
 };
 
-module.exports.getCardById = (req, res) => {
-  Card.findById(req.params.id)
+module.exports.deleteCardById = (req, res) => {
+  Card.findByIdAndRemove(req.params.id)
     .then(card => {
       if (!card) {
         res.status(404).send({message: 'Карточка не найдена!'})
@@ -41,10 +41,16 @@ module.exports.addLike = (req, res) => {
     {$addToSet: { likes: user }},
     { new: true }
     )
-    .then(card => res.send(card))
+    .then(card => {
+      if (!card) {
+        res.status(400).send({message: 'Карточка не найдена!'})
+        return;
+      }
+      res.send(card)}
+    )
     .catch(err => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({message: 'Данные не верны!'})
+        res.status(404).send({message: 'Данные не верны!'})
         return;
       }
       res.status(500).send({message: err.message})
@@ -62,7 +68,7 @@ module.exports.deleteLike = (req, res) => {
     )
     .then(card => {
       if (!card) {
-        res.status(404).send({message: 'Карточка не найдена!'})
+        res.status(400).send({message: 'Карточка не найдена!'})
         return;
       }
       res.send(card)})
