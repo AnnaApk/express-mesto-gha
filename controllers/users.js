@@ -10,7 +10,7 @@ module.exports.postUser = (req, res) => {
         res.status(400).send({message: 'Данные пользователя не верны!'})
         return;
       }
-      res.status(500).send({message: err.massege})
+      res.status(500).send({message: err.message})
     }
   );
 };
@@ -18,18 +18,18 @@ module.exports.postUser = (req, res) => {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => res.send(users))
-    .catch(err => res.status(500).send({message: err.massege}));
+    .catch(err => res.status(500).send({message: err.message}));
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
     .then(user => {
       if (!user) {
-        res.status(404).send({massege: 'Пользователь не найден!'})
+        res.status(404).send({message: 'Пользователь не найден!'})
         return;
       }
       res.send(user)})
-    .catch(err => res.status(500).send({message: err.massege}));
+    .catch(err => res.status(500).send({message: err.message}));
 };
 
 module.exports.patchUser = (req, res) => {
@@ -42,7 +42,7 @@ module.exports.patchUser = (req, res) => {
     )
     .then(user => {
       if (!user) {
-        res.status(404).send({massege: 'Пользователь не найден!'})
+        res.status(404).send({message: 'Пользователь не найден!'})
         return;
       }
       res.send(user)})
@@ -51,7 +51,7 @@ module.exports.patchUser = (req, res) => {
         res.status(400).send({message: 'Данные пользователя не верны!'})
         return;
       }
-      res.status(500).send({message: err.massege})
+      res.status(500).send({message: err.message})
     }
   );
 };
@@ -66,7 +66,7 @@ module.exports.patchUserAvatar = (req, res) => {
     )
     .then(user => {
       if (!user) {
-        res.status(404).send({massege: 'Пользователь не найден!'})
+        res.status(404).send({message: 'Пользователь не найден!'})
         return;
       }
       res.send(user)})
@@ -75,7 +75,7 @@ module.exports.patchUserAvatar = (req, res) => {
         res.status(400).send({message: 'Данные пользователя не верны!'})
         return;
       }
-      res.status(500).send({message: err.massege})
+      res.status(500).send({message: err.message})
     }
   );
 };

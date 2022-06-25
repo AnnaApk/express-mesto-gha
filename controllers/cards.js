@@ -19,13 +19,18 @@ module.exports.postCard = (req, res) => {
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then(cards => res.send(cards))
-    .catch(err => console.log('error', err));
+    .catch(err => res.status(500).send({message: err.message}));
 };
 
 module.exports.getCardById = (req, res) => {
   Card.findById(req.params.id)
-    .then(card => res.send(card))
-    .catch(err => console.log('error', err));
+    .then(card => {
+      if (!card) {
+        res.status(404).send({message: 'Карточка не найдена!'})
+        return;
+      }
+      res.send(card)})
+    .catch(err => res.status(500).send({message: err.message}));
 };
 
 module.exports.addLike = (req, res) => {
@@ -37,7 +42,14 @@ module.exports.addLike = (req, res) => {
     { new: true }
     )
     .then(card => res.send(card))
-    .catch(err => console.log('error', err));
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({message: 'Данные не верны!'})
+        return;
+      }
+      res.status(500).send({message: err.message})
+    }
+  );
 };
 
 module.exports.deleteLike = (req, res) => {
@@ -48,6 +60,18 @@ module.exports.deleteLike = (req, res) => {
     {$pull: { likes: user }},
     { new: true }
     )
-    .then(card => res.send(card))
-    .catch(err => console.log('error', err));
+    .then(card => {
+      if (!card) {
+        res.status(404).send({message: 'Карточка не найдена!'})
+        return;
+      }
+      res.send(card)})
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({message: 'Данные не верны!'})
+        return;
+      }
+      res.status(500).send({message: err.message})
+    }
+  );
 };
