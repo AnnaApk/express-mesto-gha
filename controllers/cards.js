@@ -1,3 +1,7 @@
+const NOT_FOUND = 404;
+const NOT_VALID = 400;
+const SERVER_ERR = 500;
+
 const Card = require('../models/card');
 const { ObjectId } = require('mongoose').Types;
 
@@ -9,10 +13,10 @@ module.exports.postCard = (req, res) => {
     .then(card => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({message: "Данные карточки не верны!"})
+        res.status(NOT_VALID).send({message: "Данные карточки не верны!"})
         return;
       }
-      res.status(500).send({message: err.message})
+      res.status(SERVER_ERR).send({message: err.message})
     }
   );
 };
@@ -20,23 +24,23 @@ module.exports.postCard = (req, res) => {
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then(cards => res.send(cards))
-    .catch(err => res.status(500).send({message: err.message}));
+    .catch(err => res.status(SERVER_ERR).send({message: err.message}));
 };
 
 module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .then(card => {
       if (!card) {
-        res.status(404).send({message: 'Карточка не найдена!'})
+        res.status(NOT_FOUND).send({message: 'Карточка не найдена!'})
         return;
       }
       res.send(card)})
     .catch(err => {
       if (!ObjectId.isValid(req.params.cardId)) {
-        res.status(400).send({message: 'Данные не верны!'})
+        res.status(NOT_VALID).send({message: 'Данные не верны!'})
         return;
       }
-      res.status(500).send({message: err.message})
+      res.status(SERVER_ERR).send({message: err.message})
     }
   );
 };
@@ -51,17 +55,17 @@ module.exports.addLike = (req, res) => {
     )
     .then(card => {
       if (!card) {
-        res.status(404).send({message: 'Карточка не найдена!'})
+        res.status(NOT_FOUND).send({message: 'Карточка не найдена!'})
         return;
       }
       res.send(card)}
     )
     .catch(err => {
       if (!ObjectId.isValid(req.params.cardId)) {
-        res.status(400).send({message: 'Данные не верны!'})
+        res.status(NOT_VALID).send({message: 'Данные не верны!'})
         return;
       }
-      res.status(500).send({message: err.message})
+      res.status(SERVER_ERR).send({message: err.message})
     }
   );
 };
@@ -76,16 +80,16 @@ module.exports.deleteLike = (req, res) => {
     )
     .then(card => {
       if (!card) {
-        res.status(404).send({message: 'Карточка не найдена!'})
+        res.status(NOT_FOUND).send({message: 'Карточка не найдена!'})
         return;
       }
       res.send(card)})
     .catch(err => {
       if (!ObjectId.isValid(req.params.cardId)) {
-        res.status(400).send({message: 'Данные не верны!'})
+        res.status(NOT_VALID).send({message: 'Данные не верны!'})
         return;
       }
-      res.status(500).send({message: err.message})
+      res.status(SERVER_ERR).send({message: err.message})
     }
   );
 };

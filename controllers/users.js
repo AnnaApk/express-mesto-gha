@@ -1,3 +1,7 @@
+const NOT_FOUND = 404;
+const NOT_VALID = 400;
+const SERVER_ERR = 500;
+
 const User = require('../models/user');
 const { ObjectId } = require('mongoose').Types;
 
@@ -8,10 +12,10 @@ module.exports.postUser = (req, res) => {
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({message: 'Данные пользователя не верны!'})
+        res.status(NOT_VALID).send({message: 'Данные пользователя не верны!'})
         return;
       }
-      res.status(500).send({message: err.message})
+      res.status(SERVER_ERR).send({message: err.message})
     }
   );
 };
@@ -19,23 +23,23 @@ module.exports.postUser = (req, res) => {
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => res.send(users))
-    .catch(err => res.status(500).send({message: err.message}));
+    .catch(err => res.status(SERVER_ERR).send({message: err.message}));
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
     .then(user => {
       if (!user) {
-        res.status(404).send({message: 'Пользователь не найден!'})
+        res.status(NOT_FOUND).send({message: 'Пользователь не найден!'})
         return;
       }
       res.send(user)})
     .catch(err => {
       if (!ObjectId.isValid(req.params.id)) {
-        res.status(400).send({message: 'Данные пользователя не верны!'})
+        res.status(NOT_VALID).send({message: 'Данные пользователя не верны!'})
         return;
       }
-      res.status(500).send({message: err.message})});
+      res.status(SERVER_ERR).send({message: err.message})});
 };
 
 module.exports.patchUser = (req, res) => {
@@ -48,16 +52,16 @@ module.exports.patchUser = (req, res) => {
     )
     .then(user => {
       if (!user) {
-        res.status(404).send({message: 'Пользователь не найден!'})
+        res.status(NOT_FOUND).send({message: 'Пользователь не найден!'})
         return;
       }
       res.send(user)})
     .catch(err => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({message: 'Данные пользователя не верны!'})
+        res.status(NOT_VALID).send({message: 'Данные пользователя не верны!'})
         return;
       }
-      res.status(500).send({message: err.message})
+      res.status(SERVER_ERR).send({message: err.message})
     }
   );
 };
@@ -72,16 +76,16 @@ module.exports.patchUserAvatar = (req, res) => {
     )
     .then(user => {
       if (!user) {
-        res.status(404).send({message: 'Пользователь не найден!'})
+        res.status(NOT_FOUND).send({message: 'Пользователь не найден!'})
         return;
       }
       res.send(user)})
     .catch(err => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({message: 'Данные пользователя не верны!'})
+        res.status(NOT_VALID).send({message: 'Данные пользователя не верны!'})
         return;
       }
-      res.status(500).send({message: err.message})
+      res.status(SERVER_ERR).send({message: err.message})
     }
   );
 };
