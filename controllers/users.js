@@ -7,7 +7,7 @@ module.exports.postUser = (req, res) => {
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(404).send({message: 'Данные пользователя не верны!'})
+        res.status(400).send({message: 'Данные пользователя не верны!'})
         return;
       }
       res.status(500).send({message: err.message})
@@ -24,7 +24,7 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
     .then(user => {
-      if (!user) {
+      if (user === null) {
         res.status(404).send({message: 'Пользователь не найден!'})
         return;
       }
