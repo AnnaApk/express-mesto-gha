@@ -43,16 +43,17 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
     .then(user => {
-      if (err.name === 'ValidationError' || !ObjectId.isValid(user._id)) {
-        res.status(400).send({message: 'Данные пользователя не верны!'})
-        return;
-      }
       if (!user) {
         res.status(404).send({message: 'Пользователь не найден!'})
         return;
       }
       res.send(user)})
-    .catch(err => res.status(500).send({message: err.message}));
+    .catch(err => {
+      if (!ObjectId.isValid(req.params.id)) {
+        res.status(400).send({message: 'Данные пользователя не верны!'})
+        return;
+      }
+      res.status(500).send({message: err.message})});
 };
 
 module.exports.patchUser = (req, res) => {
