@@ -30,7 +30,14 @@ module.exports.deleteCardById = (req, res) => {
         return;
       }
       res.send(card)})
-    .catch(err => res.status(500).send({message: err.message}));
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({message: 'Данные не верны!'})
+        return;
+      }
+      res.status(500).send({message: err.message})
+    }
+  );
 };
 
 module.exports.addLike = (req, res) => {
@@ -43,14 +50,14 @@ module.exports.addLike = (req, res) => {
     )
     .then(card => {
       if (!card) {
-        res.status(400).send({message: 'Карточка не найдена!'})
+        res.status(404).send({message: 'Карточка не найдена!'})
         return;
       }
       res.send(card)}
     )
     .catch(err => {
       if (err.name === 'ValidationError') {
-        res.status(404).send({message: 'Данные не верны!'})
+        res.status(400).send({message: 'Данные не верны!'})
         return;
       }
       res.status(500).send({message: err.message})
@@ -68,7 +75,7 @@ module.exports.deleteLike = (req, res) => {
     )
     .then(card => {
       if (!card) {
-        res.status(400).send({message: 'Карточка не найдена!'})
+        res.status(404).send({message: 'Карточка не найдена!'})
         return;
       }
       res.send(card)})
