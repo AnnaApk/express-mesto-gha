@@ -6,7 +6,14 @@ module.exports.postCard = (req, res) => {
 
   Card.create({ name, link, owner, likes, createdAt })
     .then(card => res.send({ data: card }))
-    .catch(err => console.log('error', err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({message: "Данные карточки не верны!"})
+        return;
+      }
+      res.status(500).send({message: err.message})
+    }
+  );
 };
 
 module.exports.getCards = (req, res) => {

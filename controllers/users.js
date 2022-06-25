@@ -5,19 +5,31 @@ module.exports.postUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then(user => res.send({ data: user }))
-    .catch(err => console.log('error', err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({message: 'Данные пользователя не верны!'})
+        return;
+      }
+      res.status(500).send({message: err.massege})
+    }
+  );
 };
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => res.send(users))
-    .catch(err => console.log('error', err));
+    .catch(err => res.status(500).send({message: err.massege}));
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
-    .then(user => res.send(user))
-    .catch(err => console.log('error', err));
+    .then(user => {
+      if (!user) {
+        res.status(404).send({massege: 'Пользователь не найден!'})
+        return;
+      }
+      res.send(user)})
+    .catch(err => res.status(500).send({message: err.massege}));
 };
 
 module.exports.patchUser = (req, res) => {
@@ -28,8 +40,20 @@ module.exports.patchUser = (req, res) => {
     {name: name, about: about},
     {new: true, runValidators: true}
     )
-    .then(user => res.send({ data: user }))
-    .catch(err => console.log('error', err));
+    .then(user => {
+      if (!user) {
+        res.status(404).send({massege: 'Пользователь не найден!'})
+        return;
+      }
+      res.send(user)})
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({message: 'Данные пользователя не верны!'})
+        return;
+      }
+      res.status(500).send({message: err.massege})
+    }
+  );
 };
 
 module.exports.patchUserAvatar = (req, res) => {
@@ -40,6 +64,18 @@ module.exports.patchUserAvatar = (req, res) => {
     {avatar: avatar},
     {new: true, runValidators: true}
     )
-    .then(user => res.send({ data: user }))
-    .catch(err => console.log('error', err));
+    .then(user => {
+      if (!user) {
+        res.status(404).send({massege: 'Пользователь не найден!'})
+        return;
+      }
+      res.send(user)})
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({message: 'Данные пользователя не верны!'})
+        return;
+      }
+      res.status(500).send({message: err.massege})
+    }
+  );
 };
