@@ -13,7 +13,7 @@ app.use(bodyParse.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '62a4c4aeaa15d24ac0e88132' // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '62a4c4aeaa15d24ac0e88132'
   };
 
   next();

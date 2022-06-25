@@ -7,4 +7,4 @@ router.get('/cards/:id', getCardById);
 router.put('/cards/:cardId/likes', addLike);
 router.delete('/cards/:cardId/likes', deleteLike);
 
-module.exports =router;
+module.exports = router;
