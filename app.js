@@ -32,7 +32,7 @@ app.use('/', cardRoute);
 // });
 
 app.use((req, res, next) => {
-  res.status(404).send('Route is not defauned!')
+  res.status(404).send({message: 'Route is not defauned!'})
 });
 
 app.listen(PORT, () => {
