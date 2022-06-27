@@ -7,9 +7,9 @@ const { ObjectId } = require('mongoose').Types;
 
 module.exports.postCard = (req, res) => {
   const owner = req.user._id;
-  const { name, link, likes, createdAt } = req.body;
+  const { name, link, createdAt } = req.body;
 
-  Card.create({ name, link, owner, likes, createdAt })
+  Card.create({ name, link, owner, createdAt })
     .then(card => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
