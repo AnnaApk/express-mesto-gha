@@ -51,12 +51,12 @@ module.exports.patchUser = (req, res) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .then(() => {
-      if (!user) {
+    .then((patchedUser) => {
+      if (!patchedUser) {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
         return;
       }
-      res.send(user);
+      res.send(patchedUser);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -75,12 +75,12 @@ module.exports.patchUserAvatar = (req, res) => {
     { avatar },
     { new: true, runValidators: true },
   )
-    .then(() => {
-      if (!user) {
+    .then((patchedUser) => {
+      if (!patchedUser) {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
         return;
       }
-      res.send(user);
+      res.send(patchedUser);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

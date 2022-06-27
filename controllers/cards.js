@@ -54,12 +54,12 @@ module.exports.addLike = (req, res) => {
     { $addToSet: { likes: user } },
     { new: true },
   )
-    .then(() => {
-      if (!card) {
+    .then((patchedCard) => {
+      if (!patchedCard) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
         return;
       }
-      res.send(card);
+      res.send(patchedCard);
     })
     .catch((err) => {
       if (!ObjectId.isValid(req.params.cardId)) {
@@ -78,12 +78,12 @@ module.exports.deleteLike = (req, res) => {
     { $pull: { likes: user } },
     { new: true },
   )
-    .then(() => {
-      if (!card) {
+    .then((patchedCard) => {
+      if (!patchedCard) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
         return;
       }
-      res.send(card);
+      res.send(patchedCard);
     })
     .catch((err) => {
       if (!ObjectId.isValid(req.params.cardId)) {
