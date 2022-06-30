@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const bodyParse = require('body-parser');
 const helmet = require('helmet');
 const process = require('process');
+const { isAuthorized } = require('./middlewares/auth');
 const userRoute = require('./routes/users');
 const cardRoute = require('./routes/cards');
+const { login, createUser } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 
@@ -15,24 +17,29 @@ app.use(bodyParse.urlencoded({ extended: true }));
 
 app.use(helmet());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '62a4c4aeaa15d24ac0e88132',
-  };
-
-  next();
-});
-
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
+app.post('/signup', createUser);
+app.post('/signin', login);
+app.use(isAuthorized);
 app.use('/', userRoute);
 app.use('/', cardRoute);
 
 app.use((req, res, next) => {
   res.status(404).send({ message: 'Route is not defauned!' });
   next();
+});
+
+app.use((err, req, res, next) => {
+  if (err.statusCode) {
+    return res.status(err.statusCode).send({ message: err.message });
+  }
+
+  console.log(err.stack);
+
+  return res.status(500).send({ message: 'Server Error' });
 });
 
 app.listen(PORT, () => {

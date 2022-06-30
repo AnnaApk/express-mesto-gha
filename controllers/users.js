@@ -1,49 +1,100 @@
-const NOT_FOUND = 404;
-const NOT_VALID = 400;
-const SERVER_ERR = 500;
+const SECRET_KEY = 'very_secret';
+const SOLT = 10;
 
 const { ObjectId } = require('mongoose').Types;
+const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { NotValidError, ConflictError, NotFoundError } = require('../errors/errors');
 
-module.exports.postUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+module.exports.createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
-  User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(NOT_VALID).send({ message: 'Данные пользователя не верны!' });
-        return;
+  if (!email || !password) {
+    throw new NotValidError('Заполните обязательные поля!');
+  }
+  bcryptjs
+    .hash(password, SOLT)
+    .then((hash) => {
+      User
+        .create({
+        name, about, avatar, email, password: hash,
+        })
+        .then((user) => res.send({ data: user }))
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            throw new NotValidError('Данные пользователя не верны!');
+          }
+          if (err.code === 11000) {
+            throw new ConflictError('Email уже зарегистрирован!');
+          }
+        })
+        .catch(next)
+    })
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new NotFoundError('Данные не верны!');
+  }
+
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Данные не верны!2');
       }
-      res.status(SERVER_ERR).send({ message: err.message });
+      return Promise.all([
+        user,
+        bcryptjs.compare(password, user.password),
+      ]);
+    })
+    .then(([user, isPasswordCorrect]) => {
+      if (!isPasswordCorrect) {
+        throw new NotFoundError('Данные не верны!3');
+      }
+      return jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' });
+    })
+    .then((token) => res.send({ token }))
+    .catch(next);
+};
+
+module.exports.authorizedUser = (req, res) => {
+  const { _id } = req.user._id;
+  User.findOne({ _id })
+    .then((user) => {
+      res.send({ user });
     });
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(SERVER_ERR).send({ message: err.message }));
+    .catch(next);
 };
+//(err) => res.status(SERVER_ERR).send({ message: err.message })
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
-        return;
+        throw new NotFoundError('Пользователь не найден!');
       }
       res.send(user);
     })
     .catch((err) => {
       if (!ObjectId.isValid(req.params.id)) {
-        res.status(NOT_VALID).send({ message: 'Данные пользователя не верны!' });
-        return;
+        throw new NotValidError('Данные пользователя не верны!');
       }
-      res.status(SERVER_ERR).send({ message: err.message });
-    });
+      throw err;
+    })
+    .catch(next);
 };
 
-module.exports.patchUser = (req, res) => {
+module.exports.patchUser = (req, res, next) => {
   const user = req.user._id;
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -53,21 +104,20 @@ module.exports.patchUser = (req, res) => {
   )
     .then((patchedUser) => {
       if (!patchedUser) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
-        return;
+        throw new NotFoundError('Пользователь не найден!');
       }
       res.send(patchedUser);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(NOT_VALID).send({ message: 'Данные пользователя не верны!' });
-        return;
+        throw new NotValidError('Данные пользователя не верны!');
       }
-      res.status(SERVER_ERR).send({ message: err.message });
-    });
+      throw err;
+    })
+    .catch(next);
 };
 
-module.exports.patchUserAvatar = (req, res) => {
+module.exports.patchUserAvatar = (req, res, next) => {
   const user = req.user._id;
   const { avatar } = req.body;
   User.findByIdAndUpdate(
@@ -77,16 +127,15 @@ module.exports.patchUserAvatar = (req, res) => {
   )
     .then((patchedUser) => {
       if (!patchedUser) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
-        return;
+        throw new NotFoundError('Пользователь не найден!');
       }
       res.send(patchedUser);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(NOT_VALID).send({ message: 'Данные пользователя не верны!' });
-        return;
+        throw new NotValidError('Данные пользователя не верны!');
       }
-      res.status(SERVER_ERR).send({ message: err.message });
-    });
+      throw err;
+    })
+    .catch(next);
 };
