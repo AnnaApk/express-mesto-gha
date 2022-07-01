@@ -22,6 +22,7 @@ const isAuthorized = (req, res, next) => {
     const payload = jwt.verify(token, SECRET_KEY);
 
     User.findOne({ _id: payload._id })
+      .select('+password')
       .then((user) => {
 
         if (!user) {

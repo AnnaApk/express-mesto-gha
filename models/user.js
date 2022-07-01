@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const REGULAR = /^https?\:\/\/[a-z0-9\D]*/gmi;
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -17,6 +18,13 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    // match: REGULAR,
+    validate: {
+      validator(v) {
+        return REGULAR.test(v);
+      },
+    },
+
   },
   email: {
     type: String,
@@ -31,6 +39,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    select: false,
   },
 });
 
