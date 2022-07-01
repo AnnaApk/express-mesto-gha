@@ -1,4 +1,5 @@
 const NOT_FOUND = 404;
+const FORBID_ERR = 403;
 const NOT_VALID = 400;
 const SERVER_ERR = 500;
 
@@ -36,10 +37,10 @@ module.exports.deleteCardById = (req, res) => {
         return;
       }
       if (card.owner !== req.user._id) {
-        res.status(NOT_FOUND).send({ message: 'Карточка не Ваша!' });
+        res.status(FORBID_ERR).send({ message: 'Карточка не Ваша!' });
         return;
       }
-      res.send(card);
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (!ObjectId.isValid(req.params.cardId)) {

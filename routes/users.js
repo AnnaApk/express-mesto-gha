@@ -1,12 +1,42 @@
 const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 const {
-  getUsers, getUserById, patchUser, patchUserAvatar, authorizedUser,
+  getUsers,
+  getUserById,
+  patchUser,
+  patchUserAvatar,
+  authorizedUser,
 } = require('../controllers/users');
 
 router.get('/users', getUsers);
 router.get('/users/me', authorizedUser);
-router.get('/users/:id', getUserById);
-router.patch('/users/me', patchUser);
-router.patch('/users/me/avatar', patchUserAvatar);
+
+router.get('/users/:id', celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24),
+  }),
+  headers: Joi.object().keys({
+    authorization: Joi.string().required().length(179),
+  }),
+}), getUserById);
+
+router.patch('/users/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }),
+  headers: Joi.object().keys({
+    authorization: Joi.string().required().length(179),
+  }),
+}), patchUser);
+
+router.patch('/users/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().uri(),
+  }),
+  headers: Joi.object().keys({
+    authorization: Joi.string().required().length(179),
+  }),
+}), patchUserAvatar);
 
 module.exports = router;
