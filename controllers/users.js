@@ -22,9 +22,10 @@ module.exports.createUser = (req, res, next) => {
         .create({
         name, about, avatar, email, password: hash,
         })
-        .then((user) => res.send({ data: user }))
+        .then((user) => res.status(200).send({ data: user }))
         .catch((err) => {
           if (err.name === 'ValidationError') {
+            console.log(err.name, err.stack)
             throw new NotValidError('Данные пользователя не верны!');
           }
           if (err.code === 11000) {
@@ -42,7 +43,7 @@ module.exports.login = (req, res, next) => {
     throw new NotFoundError('Данные не верны!');
   }
 
-  User.findOne({ email })
+  User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Данные не верны!2');
