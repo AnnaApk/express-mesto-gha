@@ -61,8 +61,9 @@ module.exports.addLike = (req, res, next) => {
       if (!ObjectId.isValid(req.params.cardId)) {
         throw new NotValidError('Данные не верны!');
       }
+      next(err);
     })
-    .catch(next);
+    //.catch(next);
 };
 
 module.exports.deleteLike = (req, res, next) => {
