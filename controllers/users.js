@@ -54,7 +54,7 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Данные не верны!2');
+        throw new NotFoundError('Данные не верны!');
       }
       return Promise.all([
         user,
@@ -63,7 +63,7 @@ module.exports.login = (req, res, next) => {
     })
     .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
-        throw new NotFoundError('Данные не верны!3');
+        throw new NotFoundError('Данные не верны!');
       }
       return jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' });
     })

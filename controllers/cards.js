@@ -25,8 +25,10 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCardById = (req, res, next) => {
+
   Card.findByIdAndRemove(req.params.id)
     .then((card) => {
+
       if (!card) {
         throw new NotSignUserError('Карточка не найдена!');
       }
@@ -34,11 +36,6 @@ module.exports.deleteCardById = (req, res, next) => {
         throw new NotYoursError('Карточка не Ваша!');
       }
       res.status(200).send(card);
-    })
-    .catch((err) => {
-      if (!ObjectId.isValid(req.params.cardId)) {
-        throw new NotValidError('Данные не верны!');
-      }
     })
     .catch(next);
 };
