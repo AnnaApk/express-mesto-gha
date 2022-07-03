@@ -12,11 +12,11 @@ router.get('/users', getUsers);
 router.get('/users/me', authorizedUser);
 
 router.get('/users/:id', celebrate({
+  headers: Joi.object().keys({
+    authorization: Joi.string().required(),
+  }).unknown(true),
   params: Joi.object().keys({
     id: Joi.string().alphanum().length(24),
-  }),
-  headers: Joi.object().keys({
-    authorization: Joi.string().required().length(179),
   }),
 }), getUserById);
 
@@ -26,8 +26,8 @@ router.patch('/users/me', celebrate({
     about: Joi.string().min(2).max(30),
   }),
   headers: Joi.object().keys({
-    authorization: Joi.string().required().length(179),
-  }),
+    authorization: Joi.string().required(),
+  }).unknown(true),
 }), patchUser);
 
 router.patch('/users/me/avatar', celebrate({
@@ -35,8 +35,8 @@ router.patch('/users/me/avatar', celebrate({
     avatar: Joi.string().uri(),
   }),
   headers: Joi.object().keys({
-    authorization: Joi.string().required().length(179),
-  }),
+    authorization: Joi.string().required(),
+  }).unknown(true),
 }), patchUserAvatar);
 
 module.exports = router;

@@ -22,10 +22,18 @@ module.exports.createUser = (req, res, next) => {
         .create({
         name, about, avatar, email, password: hash,
         })
-        .then((user) => res.status(200).send({ data: user }))
+        .then((user) => {
+          const resUser = {
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
+            _id: user._id,
+          };
+          res.status(200).send({ data: resUser });
+        })
         .catch((err) => {
           if (err.name === 'ValidationError') {
-            console.log(err.name, err.stack)
             throw new NotValidError('Данные пользователя не верны!');
           }
           if (err.code === 11000) {
@@ -76,7 +84,6 @@ module.exports.getUsers = (req, res, next) => {
     .then((users) => res.send(users))
     .catch(next);
 };
-//(err) => res.status(SERVER_ERR).send({ message: err.message })
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id)

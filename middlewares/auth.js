@@ -4,9 +4,9 @@ const User = require('../models/user');
 const SECRET_KEY = 'very_secret';
 
 const throwUnauthorizedError = () => {
-  const error = new Error('Авторизуйтесь для доступа');
-  error.statusCode = 401;
-  throw error;
+  const err = new Error('Авторизуйтесь для доступа');
+  err.statusCode = 401;
+  throw err;
 };
 
 const isAuthorized = (req, res, next) => {
@@ -31,7 +31,8 @@ const isAuthorized = (req, res, next) => {
         req.user = { _id: user._id };
 
         next();
-      });
+      })
+      .catch(next);
   } catch (err) { throwUnauthorizedError(); }
 };
 

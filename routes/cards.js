@@ -10,8 +10,8 @@ router.post('/cards', celebrate({
     link: Joi.string().required().uri(),
   }),
   headers: Joi.object().keys({
-    authorization: Joi.string().required().length(179),
-  }),
+    authorization: Joi.string().required(),
+  }).unknown(true),
 }), postCard);
 
 router.get('/cards', getCards);
@@ -22,8 +22,8 @@ router.put('/cards/:cardId/likes', celebrate({
     cardId: Joi.string().alphanum().length(24),
   }),
   headers: Joi.object().keys({
-    authorization: Joi.string().required().length(179),
-  }),
+    authorization: Joi.string().required(),
+  }).unknown(true),
 }), addLike);
 
 router.delete('/cards/:cardId/likes', celebrate({
@@ -31,8 +31,8 @@ router.delete('/cards/:cardId/likes', celebrate({
     cardId: Joi.string().alphanum().length(24),
   }),
   headers: Joi.object().keys({
-    authorization: Joi.string().required().length(179),
-  }),
+    authorization: Joi.string().required(),
+  }).unknown(true),
 }), deleteLike);
 
 module.exports = router;
