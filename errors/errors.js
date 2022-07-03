@@ -12,6 +12,13 @@ class NotFoundError extends Error {
   }
 }
 
+class NotYoursError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 403;
+  }
+}
+
 class NotSignUserError extends Error {
   constructor(message) {
     super(message);
@@ -26,4 +33,10 @@ class ConflictError extends Error {
   }
 }
 
-module.exports = { NotValidError, NotFoundError, NotSignUserError, ConflictError };
+module.exports = {
+  NotValidError,
+  NotFoundError,
+  NotYoursError,
+  NotSignUserError,
+  ConflictError
+};

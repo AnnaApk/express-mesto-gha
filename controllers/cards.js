@@ -1,12 +1,8 @@
-const NOT_FOUND = 404;
-const FORBID_ERR = 403;
-const NOT_VALID = 400;
-const SERVER_ERR = 500;
-
 const { ObjectId } = require('mongoose').Types;
+const { NotValidError, NotYoursError, NotSignUserError } = require('../errors/errors');
 const Card = require('../models/card');
 
-module.exports.postCard = (req, res) => {
+module.exports.postCard = (req, res, next) => {
   const owner = req.user._id;
   const { name, link, createdAt } = req.body;
 
@@ -15,43 +11,39 @@ module.exports.postCard = (req, res) => {
   })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(NOT_VALID).send({ message: 'Данные карточки не верны!' });
-        return;
+      if (err.name === 'ValidationError') {;
+        throw new NotValidError('Данные карточки не верны!')
       }
-      res.status(SERVER_ERR).send({ message: err.message });
-    });
+    })
+    .catch(next);
 };
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(SERVER_ERR).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.deleteCardById = (req, res) => {
+module.exports.deleteCardById = (req, res, next) => {
   Card.findByIdAndRemove(req.params.id)
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
-        return;
+        throw new NotSignUserError('Карточка не найдена!');
       }
       if (card.owner.toString() !== req.user._id.toString()) {
-        res.status(FORBID_ERR).send({ message: 'Карточка не Ваша!' });
-        return;
+        throw new NotYoursError('Карточка не Ваша!');
       }
       res.status(200).send(card);
     })
     .catch((err) => {
       if (!ObjectId.isValid(req.params.cardId)) {
-        res.status(NOT_VALID).send({ message: 'Данные не верны!' });
-        return;
+        throw new NotValidError('Данные не верны!');
       }
-      res.status(SERVER_ERR).send({ message: err.message });
-    });
+    })
+    .catch(next);
 };
 
-module.exports.addLike = (req, res) => {
+module.exports.addLike = (req, res, next) => {
   const user = req.user._id;
   const card = req.params.cardId;
   Card.findByIdAndUpdate(
@@ -61,21 +53,19 @@ module.exports.addLike = (req, res) => {
   )
     .then((patchedCard) => {
       if (!patchedCard) {
-        res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
-        return;
+        throw new NotSignUserError('Карточка не найдена!');
       }
       res.send(patchedCard);
     })
     .catch((err) => {
       if (!ObjectId.isValid(req.params.cardId)) {
-        res.status(NOT_VALID).send({ message: 'Данные не верны!' });
-        return;
+        throw new NotValidError('Данные не верны!');
       }
-      res.status(SERVER_ERR).send({ message: err.message });
-    });
+    })
+    .catch(next);
 };
 
-module.exports.deleteLike = (req, res) => {
+module.exports.deleteLike = (req, res, next) => {
   const user = req.user._id;
   const card = req.params.cardId;
   Card.findByIdAndUpdate(
@@ -85,16 +75,14 @@ module.exports.deleteLike = (req, res) => {
   )
     .then((patchedCard) => {
       if (!patchedCard) {
-        res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
-        return;
+        throw new NotSignUserError('Карточка не найдена!');
       }
       res.send(patchedCard);
     })
     .catch((err) => {
       if (!ObjectId.isValid(req.params.cardId)) {
-        res.status(NOT_VALID).send({ message: 'Данные не верны!' });
-        return;
+        throw new NotValidError('Данные не верны!');
       }
-      res.status(SERVER_ERR).send({ message: err.message });
-    });
+    })
+    .catch(next);
 };
