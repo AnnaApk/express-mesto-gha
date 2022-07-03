@@ -63,12 +63,13 @@ module.exports.addLike = (req, res, next) => {
       }
       next(err);
     })
-    //.catch(next);
 };
 
 module.exports.deleteLike = (req, res, next) => {
   const user = req.user._id;
   const card = req.params.cardId;
+  console.log(req.user._id)
+  console.log(req.params.cardId)
   Card.findByIdAndUpdate(
     card,
     { $pull: { likes: user } },
@@ -84,6 +85,6 @@ module.exports.deleteLike = (req, res, next) => {
       if (!ObjectId.isValid(req.params.cardId)) {
         throw new NotValidError('Данные не верны!');
       }
+      next(err);
     })
-    .catch(next);
 };
