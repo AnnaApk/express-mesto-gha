@@ -32,7 +32,9 @@ router.patch('/users/me', celebrate({
 
 router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().uri({
+      scheme: [/https?/]
+    }),
   }),
   headers: Joi.object().keys({
     authorization: Joi.string().required(),

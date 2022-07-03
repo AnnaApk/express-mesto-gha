@@ -5,7 +5,7 @@ const { ObjectId } = require('mongoose').Types;
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { NotValidError, ConflictError, NotFoundError } = require('../errors/errors');
+const { NotValidError, ConflictError, NotFoundError, NotSignUserError } = require('../errors/errors');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -89,7 +89,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден!');
+        throw new NotSignUserError('Пользователь не найден!');
       }
       res.send(user);
     })

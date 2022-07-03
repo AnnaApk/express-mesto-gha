@@ -5,13 +5,6 @@ class NotValidError extends Error {
   }
 }
 
-class ConflictError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 409;
-  }
-}
-
 class NotFoundError extends Error {
   constructor(message) {
     super(message);
@@ -19,4 +12,18 @@ class NotFoundError extends Error {
   }
 }
 
-module.exports = { NotValidError, ConflictError, NotFoundError};
+class NotSignUserError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 404;
+  }
+}
+
+class ConflictError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 409;
+  }
+}
+
+module.exports = { NotValidError, NotFoundError, NotSignUserError, ConflictError };
