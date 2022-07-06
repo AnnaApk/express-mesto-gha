@@ -53,7 +53,7 @@ module.exports.addLike = (req, res, next) => {
   )
     .then((patchedCard) => {
       if (!patchedCard) {
-        throw new NotSignUserError('Карточка не найдена!');
+        throw new NotFoundError('Карточка не найдена!');
       }
       res.send(patchedCard);
     })
@@ -77,7 +77,7 @@ module.exports.deleteLike = (req, res, next) => {
     )
     .then((patchedCard) => {
       if (!patchedCard) {
-        throw new NotSignUserError('Карточка не найдена!');
+        throw new NotFoundError('Карточка не найдена!');
       }
       res.send(patchedCard);
     })
