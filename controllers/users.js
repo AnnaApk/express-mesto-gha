@@ -15,9 +15,6 @@ module.exports.createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  if (!email || !password) {
-    throw new NotValidError('Заполните обязательные поля!');
-  }
   bcryptjs
     .hash(password, SOLT)
     .then((hash) => {
@@ -41,18 +38,20 @@ module.exports.createUser = (req, res, next) => {
           }
           if (err.code === 11000) {
             throw new ConflictError('Email уже зарегистрирован!');
+          } else {
+            next(err);
           }
-        })
-        .catch(next);
-    });
+        });
+    })
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    throw new NotAuthError('Данные не верны!');
-  }
+  // if (!email || !password) {
+  //   throw new NotAuthError('Данные не верны!');
+  // }
 
   User.findOne({ email }).select('+password')
     .then((user) => {
