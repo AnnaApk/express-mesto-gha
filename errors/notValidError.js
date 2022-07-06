@@ -3,4 +3,4 @@ module.exports = class NotValidError extends Error {
     super(message);
     this.statusCode = 400;
   }
-}
+};

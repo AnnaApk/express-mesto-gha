@@ -5,8 +5,6 @@ const helmet = require('helmet');
 const process = require('process');
 const { celebrate, Joi, errors } = require('celebrate');
 
-const REGULAR = /^https?:\/\/[a-z0-9\D]*/gmi;
-
 const { isAuthorized } = require('./middlewares/auth');
 const userRoute = require('./routes/users');
 const cardRoute = require('./routes/cards');
@@ -27,9 +25,7 @@ app.post('/signup', celebrate({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri({
-      scheme: [/https?/],
-    }),
+    avatar: Joi.string().pattern(/^https?:\/\/[a-z0-9\D]*\.{1}[a-z0-9\D]*/),
     about: Joi.string().min(2).max(30),
   }),
 }), createUser);

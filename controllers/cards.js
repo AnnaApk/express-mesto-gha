@@ -14,8 +14,8 @@ module.exports.postCard = (req, res, next) => {
   })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {;
-        throw new NotValidError('Данные карточки не верны!')
+      if (err.name === 'ValidationError') {
+        throw new NotValidError('Данные карточки не верны!');
       }
       throw err;
     })
@@ -61,7 +61,7 @@ module.exports.addLike = (req, res, next) => {
       if (!ObjectId.isValid(req.params.cardId)) {
         throw new NotValidError('Данные не верны!');
       }
-      throw(err);
+      throw (err);
     })
     .catch(next);
 };
@@ -74,7 +74,7 @@ module.exports.deleteLike = (req, res, next) => {
     card,
     { $pull: { likes: user } },
     { new: true },
-    )
+  )
     .then((patchedCard) => {
       if (!patchedCard) {
         throw new NotFoundError('Карточка не найдена!');
@@ -85,7 +85,7 @@ module.exports.deleteLike = (req, res, next) => {
       if (!ObjectId.isValid(req.params.cardId)) {
         throw new NotValidError('Данные не верны!');
       }
-      throw(err);
+      throw (err);
     })
     .catch(next);
 };

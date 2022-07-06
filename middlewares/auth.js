@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
 
 const SECRET_KEY = 'very_secret';
 
@@ -22,7 +21,7 @@ const isAuthorized = (req, res, next) => {
 
   try {
     payload = jwt.verify(token, SECRET_KEY);
-  } catch(e) {
+  } catch (e) {
     throwUnauthorizedError();
   }
   req.user = payload;
