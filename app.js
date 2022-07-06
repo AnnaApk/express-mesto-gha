@@ -42,9 +42,9 @@ app.use('/', userRoute);
 app.use('/', cardRoute);
 
 app.use((req, res, next) => {
-  res.status(404).send({ message: 'Route is not defauned!' });
-  // const err = new Error('Route is not defauned!');
-  // err.status = 404;
+  // res.status(404).send({ message: 'Route is not defauned!' });
+  const err = new Error('Route is not defauned!');
+  err.status = 404;
   next();
 });
 
@@ -52,7 +52,7 @@ app.use(errors());
 
 app.use((err, req, res, next) => {
   if (err.statusCode) {
-    return res.status(err.statusCode).send({ message: err.message });
+    next(res.status(err.statusCode).send({ message: err.message }));
   }
 
   console.log(err.stack);
