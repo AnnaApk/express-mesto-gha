@@ -18,22 +18,28 @@ const isAuthorized = (req, res, next) => {
 
   const token = auth.replace('Bearer ', '');
 
+  let payload;
+
   try {
-    const payload = jwt.verify(token, SECRET_KEY);
+    payload = jwt.verify(token, SECRET_KEY);
+  } catch(e) {
+    throwUnauthorizedError();
+  }
+  req.user = payload;
+  next();
 
-    User.findOne({ _id: payload._id })
-      .then((user) => {
-
-        if (!user) {
-          throwUnauthorizedError();
-        }
-
-        req.user = { _id: user._id };
-
-        next();
-      })
-      .catch(next);
-  } catch (err) { throwUnauthorizedError(); }
+  // try {
+  //   const payload = jwt.verify(token, SECRET_KEY);
+  //   User.findOne({ _id: payload._id })
+  //     .then((user) => {
+  //       if (!user) {
+  //         throwUnauthorizedError();
+  //       }
+  //       req.user = { _id: user._id };
+  //       next();
+  //     })
+  //     .catch(next);
+  // } catch (err) { throwUnauthorizedError(); }
 };
 
 module.exports = { isAuthorized };
