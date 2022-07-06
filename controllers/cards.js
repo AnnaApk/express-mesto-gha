@@ -28,7 +28,6 @@ module.exports.deleteCardById = (req, res, next) => {
 
   Card.findByIdAndRemove(req.params.id)
     .then((card) => {
-
       if (!card) {
         throw new NotSignUserError('Карточка не найдена!');
       }
@@ -65,13 +64,12 @@ module.exports.addLike = (req, res, next) => {
 module.exports.deleteLike = (req, res, next) => {
   const user = req.user._id;
   const card = req.params.cardId;
-  console.log(req.user._id)
-  console.log(req.params.cardId)
+
   Card.findByIdAndUpdate(
     card,
     { $pull: { likes: user } },
     { new: true },
-  )
+    )
     .then((patchedCard) => {
       if (!patchedCard) {
         throw new NotSignUserError('Карточка не найдена!');

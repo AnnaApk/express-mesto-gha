@@ -5,7 +5,9 @@ const { ObjectId } = require('mongoose').Types;
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { NotValidError, ConflictError, NotFoundError, NotSignUserError } = require('../errors/errors');
+const {
+  NotValidError, ConflictError, NotFoundError, NotSignUserError,
+} = require('../errors/errors');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -20,7 +22,7 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => {
       User
         .create({
-        name, about, avatar, email, password: hash,
+          name, about, avatar, email, password: hash,
         })
         .then((user) => {
           const resUser = {
@@ -40,8 +42,8 @@ module.exports.createUser = (req, res, next) => {
             throw new ConflictError('Email уже зарегистрирован!');
           }
         })
-        .catch(next)
-    })
+        .catch(next);
+    });
 };
 
 module.exports.login = (req, res, next) => {
