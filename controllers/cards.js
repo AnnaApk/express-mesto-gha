@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongoose').Types;
 const NotValidError = require('../errors/notValidError');
-const Forbidden = require('../errors/forbidden');
-const NotSignUserError = require('../errors/notSignUserError');
+const ForbiddenError = require('../errors/forbiddenError');
+const NotFoundError = require('../errors/notFoundError');
 
 const Card = require('../models/card');
 
@@ -17,6 +17,7 @@ module.exports.postCard = (req, res, next) => {
       if (err.name === 'ValidationError') {;
         throw new NotValidError('Данные карточки не верны!')
       }
+      throw err;
     })
     .catch(next);
 };
@@ -28,16 +29,16 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCardById = (req, res, next) => {
+  const { id } = req.params;
 
-  Card.findByIdAndRemove(req.params.id)
+  Card.findById(id)
+    .orFail(() => new NotFoundError('Карточка не найдена!'))
     .then((card) => {
-      if (!card) {
-        throw new NotSignUserError('Карточка не найдена!');
-      }
       if (card.owner.toString() !== req.user._id.toString()) {
-        throw new Forbidden('Карточка не Ваша!');
+        return new ForbiddenError('Карточка не Ваша!');
       }
-      res.status(200).send(card);
+      return card.remove()
+        .then(() => res.status(200).send(card));
     })
     .catch(next);
 };
@@ -60,8 +61,9 @@ module.exports.addLike = (req, res, next) => {
       if (!ObjectId.isValid(req.params.cardId)) {
         throw new NotValidError('Данные не верны!');
       }
-      next(err);
+      throw(err);
     })
+    .catch(next);
 };
 
 module.exports.deleteLike = (req, res, next) => {
@@ -83,6 +85,7 @@ module.exports.deleteLike = (req, res, next) => {
       if (!ObjectId.isValid(req.params.cardId)) {
         throw new NotValidError('Данные не верны!');
       }
-      next(err);
+      throw(err);
     })
+    .catch(next);
 };

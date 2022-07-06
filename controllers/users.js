@@ -8,7 +8,7 @@ const User = require('../models/user');
 const NotValidError = require('../errors/notValidError');
 const ConflictError = require('../errors/conflictError');
 const NotAuthError = require('../errors/unAuthError');
-const NotSignUserError = require('../errors/notSignUserError');
+const NotFoundError = require('../errors/notFoundError');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -32,7 +32,7 @@ module.exports.createUser = (req, res, next) => {
           };
           res.status(200).send({ data: resUser });
         })
-        .catch((err, next) => {
+        .catch((err) => {
           if (err.name === 'ValidationError') {
             throw new NotValidError('Данные пользователя не верны!');
           }
@@ -99,7 +99,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        throw new NotSignUserError('Пользователь не найден!');
+        throw new NotFoundError('Пользователь не найден!');
       }
       res.send(user);
     })
