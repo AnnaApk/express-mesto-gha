@@ -42,10 +42,9 @@ app.use('/', userRoute);
 app.use('/', cardRoute);
 
 app.use((req, res, next) => {
-  // res.status(404).send({ message: 'Route is not defauned!' });
   const err = new Error('Route is not defauned!');
   err.status = 404;
-  next();
+  next(err);
 });
 
 app.use(errors());
