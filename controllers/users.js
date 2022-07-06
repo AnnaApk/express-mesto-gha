@@ -74,12 +74,20 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.authorizedUser = (req, res) => {
-  const { _id } = req.user._id;
+module.exports.authorizedUser = (req, res, next) => {
+  const { _id } = req.user;
   User.findOne({ _id })
     .then((user) => {
-      res.send({ user });
-    });
+      const resUser = {
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+        _id: user._id,
+      };
+      res.send({ resUser });
+    })
+    .catch(next);
 };
 
 module.exports.getUsers = (req, res, next) => {
