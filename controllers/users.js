@@ -32,7 +32,7 @@ module.exports.createUser = (req, res, next) => {
           };
           res.status(200).send({ data: resUser });
         })
-        .catch((err) => {
+        .catch((err, next) => {
           if (err.name === 'ValidationError') {
             throw new NotValidError('Данные пользователя не верны!');
           }
