@@ -5,9 +5,10 @@ const { ObjectId } = require('mongoose').Types;
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  NotValidError, ConflictError, NotFoundError, NotSignUserError,
-} = require('../errors/errors');
+const NotValidError = require('../errors/notValidError');
+const ConflictError = require('../errors/conflictError');
+const NotAuthError = require('../errors/unAuthError');
+const NotSignUserError = require('../errors/notSignUserError');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -50,13 +51,13 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new NotFoundError('Данные не верны!');
+    throw new NotAuthError('Данные не верны!');
   }
 
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Данные не верны!');
+        throw new NotAuthError('Данные не верны!');
       }
       return Promise.all([
         user,
@@ -65,7 +66,7 @@ module.exports.login = (req, res, next) => {
     })
     .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
-        throw new NotFoundError('Данные не верны!');
+        throw new NotAuthError('Данные не верны!');
       }
       return jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' });
     })
@@ -114,7 +115,7 @@ module.exports.patchUser = (req, res, next) => {
   )
     .then((patchedUser) => {
       if (!patchedUser) {
-        throw new NotFoundError('Пользователь не найден!');
+        throw new NotAuthError('Пользователь не найден!');
       }
       res.send(patchedUser);
     })
@@ -137,7 +138,7 @@ module.exports.patchUserAvatar = (req, res, next) => {
   )
     .then((patchedUser) => {
       if (!patchedUser) {
-        throw new NotFoundError('Пользователь не найден!');
+        throw new NotAuthError('Пользователь не найден!');
       }
       res.send(patchedUser);
     })

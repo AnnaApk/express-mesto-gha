@@ -1,5 +1,8 @@
 const { ObjectId } = require('mongoose').Types;
-const { NotValidError, NotYoursError, NotSignUserError } = require('../errors/errors');
+const NotValidError = require('../errors/notValidError');
+const Forbidden = require('../errors/forbidden');
+const NotSignUserError = require('../errors/notSignUserError');
+
 const Card = require('../models/card');
 
 module.exports.postCard = (req, res, next) => {
@@ -32,7 +35,7 @@ module.exports.deleteCardById = (req, res, next) => {
         throw new NotSignUserError('Карточка не найдена!');
       }
       if (card.owner.toString() !== req.user._id.toString()) {
-        throw new NotYoursError('Карточка не Ваша!');
+        throw new Forbidden('Карточка не Ваша!');
       }
       res.status(200).send(card);
     })
