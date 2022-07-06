@@ -43,7 +43,7 @@ app.use('/', cardRoute);
 
 app.use((req, res, next) => {
   const err = new Error('Route is not defauned!');
-  err.status = 404;
+  err.statusCode = 404;
   next(err);
 });
 
