@@ -34,14 +34,14 @@ module.exports.createUser = (req, res, next) => {
         })
         .catch((err, next) => {
           if (err.name === 'ValidationError') {
-            next(new NotValidError('Данные пользователя не верны!'));
+            throw new NotValidError('Данные пользователя не верны!');
           }
           if (err.code === 11000) {
-            next(new ConflictError('Email уже зарегистрирован!'));
-          } else {
-            next(err);
+            throw new ConflictError('Email уже зарегистрирован!');
           }
-        });
+          throw err;
+        })
+        .catch(next);
     })
     .catch(next);
 };
