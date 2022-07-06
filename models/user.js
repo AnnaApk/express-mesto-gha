@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const REGULAR = /^https?:\/\/[a-z0-9\D]*\.{1}[a-z0-9\D]*/gmi;
+// const REGULAR = /^https?:\/\/[a-z0-9\D]*\.{1}[a-z0-9\D]*/gmi;
 
 const userSchema = new mongoose.Schema({
   name: {

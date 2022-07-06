@@ -12,9 +12,9 @@ router.get('/users', getUsers);
 router.get('/users/me', authorizedUser);
 
 router.get('/users/:id', celebrate({
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(true),
+  // headers: Joi.object().keys({
+  //   authorization: Joi.string().required(),
+  // }).unknown(true),
   params: Joi.object().keys({
     id: Joi.string().alphanum().length(24),
   }),
@@ -25,20 +25,18 @@ router.patch('/users/me', celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
   }),
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(true),
+  // headers: Joi.object().keys({
+  //   authorization: Joi.string().required(),
+  // }).unknown(true),
 }), patchUser);
 
 router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri({
-      scheme: [/https?/]
-    }),
+    avatar: Joi.string().pattern(/^https?:\/\/[a-z0-9\D]*\.{1}[a-z0-9\D]*/),
   }),
-  headers: Joi.object().keys({
-    authorization: Joi.string().required(),
-  }).unknown(true),
+  // headers: Joi.object().keys({
+  //   authorization: Joi.string().required(),
+  // }).unknown(true),
 }), patchUserAvatar);
 
 module.exports = router;
