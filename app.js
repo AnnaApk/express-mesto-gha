@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const process = require('process');
 const { celebrate, Joi, errors } = require('celebrate');
 
+const NotFoundError = require('./errors/notFoundError');
 const { isAuthorized } = require('./middlewares/auth');
 const userRoute = require('./routes/users');
 const cardRoute = require('./routes/cards');
@@ -42,16 +43,16 @@ app.use('/', userRoute);
 app.use('/', cardRoute);
 
 app.use((req, res, next) => {
-  const err = new Error('Route is not defauned!');
-  err.statusCode = 404;
+  const err = new NotFoundError('Route is not defauned!');
   next(err);
 });
 
 app.use(errors());
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   if (err.statusCode) {
-    next(res.status(err.statusCode).send({ message: err.message }));
+    return res.status(err.statusCode).send({ message: err.message });
   }
 
   console.log(err.stack);
